@@ -1,188 +1,162 @@
-class BaseLaptop extends ItemBase 
+class BaseLaptop extends ItemBase
 {
-    private int netSynch_laptopId = -1;
+	private int netSynch_laptopId = -1;
 
-    ref array<BaseCamera> arrayCamera = new array<BaseCamera>();
+	ref array<BaseCamera> arrayCamera = new array<BaseCamera>();
 
-    void BaseLaptop()
-    {
-        RegisterNetSyncVariableInt("netSynch_laptopId");
-    }
+	// Component validation cache.  Marked dirty whenever an attachment changes
+	// so HasRequiredComponentsForCCTV() only does inventory lookups once per change
+	// instead of on every action-condition poll.
+	private bool m_ComponentsDirty    = true;
+	private bool m_HasRequiredComponents = false;
 
-    int GetLaptopId()
-    {
-        if (netSynch_laptopId == -1)
-            GenerateLaptopId();
-            
-        return netSynch_laptopId;
-    }
-
-    array<BaseCamera> GetCameras()
-    {
-        GetBaseCameraLogger().LogDebug("Laptop:GetCameras");
-        arrayCamera.Clear();
-        array<BaseCamera> arrCamera = BaseCamera.GetCameras();
-        foreach(BaseCamera baseCamera : arrCamera)
-        {
-            if(!baseCamera)
-                continue;
-
-            GetBaseCameraLogger().LogDebug("baseCamera.GetLaptopId()" + baseCamera.GetLaptopId());
-            GetBaseCameraLogger().LogDebug("baseCamera.netSynch_laptopId" + netSynch_laptopId);
-            if(baseCamera.GetLaptopId() == netSynch_laptopId)
-                arrayCamera.Insert(baseCamera);
-        }
-
-        GetBaseCameraLogger().LogDebug("Laptop:GetCameras result count: " + arrayCamera.Count());
-
-        return arrayCamera;
-    }
-
-	bool HasRequiredComponentsForCCTV() 
-	{ 
-		return HasWifiRouter() && HasRequiredKeyboard() && HasRequiredMonitor() && HasRequiredMouse() && HasRequiredMother_Board() && GetPSUCount() >= 1 && GetRamCount() >= 1 && GetKingstonCount() >= 1 && GetGraphicCardCount() >= 1 && GetFanCount() >= 1 && HasCooler();  
+	void BaseLaptop()
+	{
+		RegisterNetSyncVariableInt("netSynch_laptopId");
 	}
 
-	bool HasRequiredKeyboard()
+	// -------------------------------------------------------------------------
+	// Camera management
+	// -------------------------------------------------------------------------
+
+	int GetLaptopId()
 	{
-		return GetInventory().FindAttachmentByName("Keyboard") != null;
+		if (netSynch_laptopId == -1)
+			GenerateLaptopId();
+
+		return netSynch_laptopId;
 	}
 
-	bool HasRequiredMonitor()
+	array<BaseCamera> GetCameras()
 	{
-		return GetInventory().FindAttachmentByName("Monitor") != null;
+		GetBaseCameraLogger().LogDebug("Laptop:GetCameras");
+		arrayCamera.Clear();
+
+		array<BaseCamera> arrCamera = BaseCamera.GetCameras();
+		foreach (BaseCamera baseCamera : arrCamera)
+		{
+			if (!baseCamera)
+				continue;
+
+			if (baseCamera.GetLaptopId() == netSynch_laptopId)
+				arrayCamera.Insert(baseCamera);
+		}
+
+		GetBaseCameraLogger().LogDebug("Laptop:GetCameras result count: " + arrayCamera.Count());
+		return arrayCamera;
 	}
 
-	bool HasRequiredMouse()
+	// -------------------------------------------------------------------------
+	// Component validation (cached)
+	// -------------------------------------------------------------------------
+
+	bool HasRequiredComponentsForCCTV()
 	{
-		return GetInventory().FindAttachmentByName("Mouse") != null;
+		if (m_ComponentsDirty)
+		{
+			m_HasRequiredComponents = ComputeRequiredComponents();
+			m_ComponentsDirty = false;
+		}
+		return m_HasRequiredComponents;
 	}
 
-	bool HasRequiredMother_Board()
+	private bool ComputeRequiredComponents()
 	{
-		return GetInventory().FindAttachmentByName("Mother_Board") != null;
+		return HasWifiRouter()
+			&& HasRequiredKeyboard()
+			&& HasRequiredMonitor()
+			&& HasRequiredMouse()
+			&& HasRequiredMother_Board()
+			&& HasCooler()
+			&& GetPSUCount()          >= 1
+			&& GetRamCount()          >= 1
+			&& GetKingstonCount()     >= 1
+			&& GetGraphicCardCount()  >= 1
+			&& GetFanCount()          >= 1;
 	}
 
-	bool HasWifiRouter()
+	// Invalidate the cache whenever an attachment is added or removed
+	override void EEItemAttached(EntityAI item, string slotName)
 	{
-        return GetInventory().FindAttachmentByName("WiFi_Router") != null;
-    }
+		super.EEItemAttached(item, slotName);
+		m_ComponentsDirty = true;
+	}
 
-	int GetPSUCount()
+	override void EEItemDetached(EntityAI item, string slotName)
+	{
+		super.EEItemDetached(item, slotName);
+		m_ComponentsDirty = true;
+	}
+
+	// -------------------------------------------------------------------------
+	// Component presence checks
+	// -------------------------------------------------------------------------
+
+	bool HasRequiredKeyboard()    { return GetInventory().FindAttachmentByName("Keyboard")     != null; }
+	bool HasRequiredMonitor()     { return GetInventory().FindAttachmentByName("Monitor")       != null; }
+	bool HasRequiredMouse()       { return GetInventory().FindAttachmentByName("Mouse")         != null; }
+	bool HasRequiredMother_Board(){ return GetInventory().FindAttachmentByName("Mother_Board")  != null; }
+	bool HasWifiRouter()          { return GetInventory().FindAttachmentByName("WiFi_Router")   != null; }
+	bool HasCooler()              { return GetInventory().FindAttachmentByName("Cooler")        != null; }
+
+	int GetPSUCount()          { return CountSlots("PSU_",            2); }
+	int GetRamCount()          { return CountSlots("Ram_",            4); }
+	int GetKingstonCount()     { return CountSlots("Kingston_",       3); }
+	int GetGraphicCardCount()  { return CountSlots("Graphics_Card_",  3); }
+	int GetFanCount()          { return CountSlots("Fan_",            2); }
+
+	// Counts numbered attachment slots (prefix + "1" … prefix + maxSlots)
+	private int CountSlots(string prefix, int maxSlots)
 	{
 		int count = 0;
-		if(GetInventory().FindAttachmentByName("PSU_1"))
-			count++;
-
-		if(GetInventory().FindAttachmentByName("PSU_2"))
-			count++;
-
-		return count;
-	}  
-
-	int GetKingstonCount()
-	{
-		int count = 0;
-		if(GetInventory().FindAttachmentByName("Kingston_1"))
-			count++;
-
-		if(GetInventory().FindAttachmentByName("Kingston_2"))
-			count++;
-
-		if(GetInventory().FindAttachmentByName("Kingston_3"))
-			count++;
-
-		return count;
-	}  
-
-	int GetRamCount()
-	{
-		int count = 0;
-		if(GetInventory().FindAttachmentByName("Ram_1"))
-			count++;
-
-		if(GetInventory().FindAttachmentByName("Ram_2"))
-			count++;
-
-		if(GetInventory().FindAttachmentByName("Ram_3"))
-			count++;
-
-		if(GetInventory().FindAttachmentByName("Ram_4"))
-			count++;
-
-		return count;
-	}  
-
-	int GetGraphicCardCount()
-	{
-		int count = 0;
-		if(GetInventory().FindAttachmentByName("Graphics_Card_1"))
-			count++;
-
-		if(GetInventory().FindAttachmentByName("Graphics_Card_2"))
-			count++;
-
-		if(GetInventory().FindAttachmentByName("Graphics_Card_3"))
-			count++;
-
+		for (int i = 1; i <= maxSlots; i++)
+		{
+			if (GetInventory().FindAttachmentByName(prefix + i.ToString()))
+				count++;
+		}
 		return count;
 	}
 
-	int GetFanCount()
-	{
-		int count = 0;
-		if(GetInventory().FindAttachmentByName("Fan_1"))
-			count++;
+	// -------------------------------------------------------------------------
+	// Identity / persistence
+	// -------------------------------------------------------------------------
 
-		if(GetInventory().FindAttachmentByName("Fan_2"))
-			count++;
-
-		return count;
-	}
-
-	bool HasCooler()
-	{
-        return GetInventory().FindAttachmentByName("Cooler")!= null;
-    }
-
-    override void EEInit()
+	override void EEInit()
 	{
 		super.EEInit();
-    }
-
-    void GenerateLaptopId()
-    {
-        GetBaseCameraLogger().LogDebug("Laptop:GenerateLaptopId");
-        netSynch_laptopId = BaseCameraHelper.GetUniqueId(this);
-
-        GetBaseCameraLogger().LogDebug("Laptop:netSynch_laptopId " + netSynch_laptopId.ToString());
-        SetSynchDirty();
-    }
-
-    override void OnStoreSave( ParamsWriteContext ctx )
-	{
-		super.OnStoreSave( ctx );
-		ctx.Write( netSynch_laptopId );
 	}
 
-	override bool OnStoreLoad( ParamsReadContext ctx, int version )
+	void GenerateLaptopId()
 	{
-		if ( !super.OnStoreLoad( ctx, version ) )
+		GetBaseCameraLogger().LogDebug("Laptop:GenerateLaptopId");
+		netSynch_laptopId = BaseCameraHelper.GetUniqueId(this);
+		GetBaseCameraLogger().LogDebug("Laptop:netSynch_laptopId " + netSynch_laptopId.ToString());
+		SetSynchDirty();
+	}
+
+	override void OnStoreSave(ParamsWriteContext ctx)
+	{
+		super.OnStoreSave(ctx);
+		ctx.Write(netSynch_laptopId);
+	}
+
+	override bool OnStoreLoad(ParamsReadContext ctx, int version)
+	{
+		if (!super.OnStoreLoad(ctx, version))
 			return false;
 
-		if (!ctx.Read( netSynch_laptopId ))
+		if (!ctx.Read(netSynch_laptopId))
 			return false;
-		
-		SetSynchDirty();	
 
+		SetSynchDirty();
 		return true;
 	}
 
-    override void SetActions()
-    {
+	override void SetActions()
+	{
 		super.SetActions();
 		AddAction(ActionPlugIn);
-        AddAction( ActionTogglePlaceObject );
-		AddAction( ActionDeployObject );
-    }
-};
+		AddAction(ActionTogglePlaceObject);
+		AddAction(ActionDeployObject);
+	}
+}

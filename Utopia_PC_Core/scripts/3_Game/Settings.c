@@ -26,22 +26,30 @@ class UtopiaPcSettings
 
     void InsertDefaultCoinSettings()
     {
-        // Example for Bitcoin with different settings per GPU
+        // Hash rates (MH/s) per GPU — higher = mines faster (currently informational, displayed in UI)
         map<string, float> bitcoinHashRates = new map<string, float>();
-        bitcoinHashRates.Insert("Utopia_Graphics_Card_1080TI", 10);
-        bitcoinHashRates.Insert("Utopia_RTX_2080TI", 8);
+        bitcoinHashRates.Insert("Utopia_Graphics_Card_660",    2.0);
+        bitcoinHashRates.Insert("Utopia_Graphics_Card_1080TI", 10.0);
+        bitcoinHashRates.Insert("Utopia_RTX_2080TI",           18.0);
+        bitcoinHashRates.Insert("Utopia_Graphics_Card_4090TI", 30.0);
 
+        // Coins yielded per mining tick (MINING_TICK_INTERVAL seconds, default 60s)
         map<string, float> bitcoinYields = new map<string, float>();
-        bitcoinYields.Insert("Utopia_Graphics_Card_1080TI", 0.1); // 0.1 Bitcoin per cycle for 1080TI
-        bitcoinYields.Insert("Utopia_RTX_2080TI", 0.15); // 0.15 Bitcoin per cycle for 2080TI
+        bitcoinYields.Insert("Utopia_Graphics_Card_660",    0.05);
+        bitcoinYields.Insert("Utopia_Graphics_Card_1080TI", 0.10);
+        bitcoinYields.Insert("Utopia_RTX_2080TI",           0.15);
+        bitcoinYields.Insert("Utopia_Graphics_Card_4090TI", 0.25);
 
+        // damageRates are unused for wear calculation — GPU wear is derived from the
+        // lifetime values in graphicCardLifetimes so each GPU lasts exactly that many
+        // seconds of continuous mining regardless of which coin is being mined.
         map<string, float> bitcoinDamageRates = new map<string, float>();
-        bitcoinDamageRates.Insert("Utopia_Graphics_Card_1080TI", 0.001); // Damage rate for 1080TI
-        bitcoinDamageRates.Insert("Utopia_RTX_2080TI", 0.002); // Damage rate for 2080TI
+        bitcoinDamageRates.Insert("Utopia_Graphics_Card_660",    1.0);
+        bitcoinDamageRates.Insert("Utopia_Graphics_Card_1080TI", 1.0);
+        bitcoinDamageRates.Insert("Utopia_RTX_2080TI",           1.0);
+        bitcoinDamageRates.Insert("Utopia_Graphics_Card_4090TI", 1.0);
 
         coinSettings.Insert("Bitcoin", new UtopiaCoinSettings("Bitcoin", bitcoinHashRates, bitcoinYields, bitcoinDamageRates, "Bitcoin_Item"));
-
-        // Repeat similarly for other coins...
     }
 
 

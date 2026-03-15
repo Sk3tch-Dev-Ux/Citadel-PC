@@ -15,15 +15,14 @@ class BaseCameraLoggingModule : CF_ModuleGame
 
     float dtime = 0;
 
-    float dtimeTemp = 0;
-
 
     override void OnInit()
     {
         super.OnInit();
-        
+
         EnableUpdate();
         EnableMissionStart();
+        EnableMissionFinish();
     }
 
     override void OnMissionStart(Class sender, CF_EventArgs args)
@@ -41,7 +40,7 @@ class BaseCameraLoggingModule : CF_ModuleGame
         }
         else
         {
-            AddLegacyRPC("GetLogLevelResponse", SingleplayerExecutionType.Client);
+            GetRPCManager().AddRPC(ClassName(), "GetLogLevelResponse", this, SingeplayerExecutionType.Client);
         }
     }
 
@@ -62,12 +61,22 @@ class BaseCameraLoggingModule : CF_ModuleGame
         GetRPCManager().SendRPC(ClassName(), "GetLogLevelResponse",  new Param1<int>(networkSync_LogLevel), true, NULL);
     }
 
+    override void OnMissionFinish(Class sender, CF_EventArgs args)
+    {
+        super.OnMissionFinish(sender, args);
+
+        if (fileHandle != 0)
+        {
+            CloseFile(fileHandle);
+            fileHandle = 0;
+        }
+    }
+
     override void OnUpdate(Class sender, CF_EventArgs args)
     {
         auto update = CF_EventUpdateArgs.Cast(args);
 
         dtime += update.DeltaTime;
-        dtimeTemp += update.DeltaTime;
 
         if(GetGame().IsServer() && settings && dtime >= settings.refreshRateInSeconds)
         {

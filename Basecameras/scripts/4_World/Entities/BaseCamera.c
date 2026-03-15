@@ -1,15 +1,33 @@
-class BaseCamera extends ItemBase 
+class BaseCamera extends ItemBase
 {
     private static ref array<BaseCamera> arrCamera = new array<BaseCamera>();
-    private int netSynch_laptopId = 0;
+    private int  netSynch_laptopId = 0;
+    private bool netSynch_IsOn     = false;
 
-    private bool netSynch_IsOn = false;
+    private ref BaseCameraSettings m_Settings;
 
     void BaseCamera()
     {
         RegisterNetSyncVariableBool("netSynch_IsOn");
         RegisterNetSyncVariableInt("netSynch_laptopId");
         arrCamera.Insert(this);
+    }
+
+    void ~BaseCamera()
+    {
+        int idx = arrCamera.Find(this);
+        if (idx != -1)
+            arrCamera.Remove(idx);
+    }
+
+    override void EEInit()
+    {
+        super.EEInit();
+
+        // Load settings once per camera instance so GetCameraConsumption()
+        // never touches the filesystem at runtime.
+        if (GetGame().IsServer())
+            m_Settings = BaseCameraSettings.Load();
     }
 
     int GetLaptopId()
@@ -32,8 +50,10 @@ class BaseCamera extends ItemBase
 
     float GetCameraConsumption()
     {
-        BaseCameraSettings settings = BaseCameraSettings.Load();
-        return (settings.cameraBatteryPerCentConsumptionPerSec*50.0)/100.0;
+        if (!m_Settings)
+            return 0.25; // fallback: 0.5% * 50 / 100
+
+        return (m_Settings.cameraBatteryPerCentConsumptionPerSec * 50.0) / 100.0;
     }
 
     void SetCameraState(bool state)

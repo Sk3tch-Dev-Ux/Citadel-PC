@@ -6,13 +6,13 @@ class ActionUnpackDeskBox: ActionUnpackBox
         {
             string path = "CfgVehicles " + action_data.m_MainItem.GetType();
             array<string> itemsToSpawn = {
-                "Utopia_PC_Desk_Top_1",    // Replace these with actual item class names
-                "Utopia_PC_Desk_Top_2",     // Replace these with actual item class names
-                "Utopia_PC_Leg_1", // Replace these with actual item class names
-                "Utopia_PC_Leg_2", // Replace these with actual item class names
-                "Utopia_PC_Leg_3",      // Replace these with actual item class names
-                "Utopia_PC_Case",      // Replace these with actual item class names
-                "Utopia_Desk_Manual"       // Replace these with actual item class names
+                "Utopia_PC_Desk_Top_1",
+                "Utopia_PC_Desk_Top_2",
+                "Utopia_PC_Leg_1",
+                "Utopia_PC_Leg_2",
+                "Utopia_PC_Leg_3",
+                "Utopia_PC_Case",
+                "Utopia_Desk_Manual"
             };
 
             vector position = action_data.m_Player.GetPosition();

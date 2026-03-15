@@ -9,7 +9,6 @@ class UtopiaPcCoreModule : CF_ModuleWorld
 
         EnableInvokeConnect();
         EnableMissionStart();
-        EnableUpdate();
     }
 
     UtopiaPcSettings GetSettings()
@@ -89,10 +88,6 @@ class UtopiaPcCoreModule : CF_ModuleWorld
         GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(InitializeModule, 1000); 
     }
 
-    override void OnUpdate(Class sender, CF_EventArgs args)
-    {
-        super.OnUpdate(sender, args);
-    }
 }
 
 static ref UtopiaPcCoreModule GetUtopiaPcModule()

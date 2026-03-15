@@ -1,4 +1,4 @@
-FrameWidgetClass rootFrame {
+ FrameWidgetClass rootFrame {
  size 1 1
  hexactpos 0
  vexactpos 0
@@ -17,9 +17,9 @@ FrameWidgetClass rootFrame {
    {
     ImageWidgetClass menuBar {
      ignorepointer 1
-     color 0.1961 0.1961 0.1961 1
-     position 0.0011 0
-     size 1 0.05
+     color 0.1137 0.1137 0.1137 0.95
+     position 0 0
+     size 1 0.055
      halign center_ref
      valign bottom_ref
      hexactpos 0
@@ -28,6 +28,22 @@ FrameWidgetClass rootFrame {
      vexactsize 0
      mode blend
      {
+      TextWidgetClass textMiningStatus {
+       ignorepointer 1
+       position 0.01 0
+       size 0.28 1
+       halign left_ref
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       text "IDLE"
+       color 0.5 0.5 0.5 1
+       font "gui/fonts/etelkatextpro18"
+       "exact text" 1
+       "text halign" left
+       "text valign" center
+      }
       GridSpacerWidgetClass gridEnergyBattery {
        ignorepointer 1
        position 0 0
@@ -67,7 +83,7 @@ FrameWidgetClass rootFrame {
          vexactpos 0
          hexactsize 0
          vexactsize 0
-         text "100%"
+         text "---"
          font "gui/fonts/etelkatextpro28"
          "exact text" 1
          "text halign" center
@@ -91,8 +107,8 @@ FrameWidgetClass rootFrame {
     PanelWidgetClass noBatteryPanel {
      visible 0
      ignorepointer 1
-     color 0.1137 0.1137 0.1137 1
-     size 1 0.95
+     color 0.051 0.051 0.051 1
+     size 1 0.945
      halign center_ref
      hexactpos 0
      vexactpos 0
@@ -102,8 +118,8 @@ FrameWidgetClass rootFrame {
      {
       ImageWidgetClass noBattery {
        ignorepointer 1
-       position 0 0.02
-       size 0.14 0.23
+       position 0 -0.05
+       size 0.12 0.2
        halign center_ref
        valign center_ref
        hexactpos 0
@@ -114,6 +130,97 @@ FrameWidgetClass rootFrame {
        mode blend
        "src alpha" 1
        stretch 1
+      }
+      TextWidgetClass textNoSignalReason {
+       ignorepointer 1
+       position 0 0.13
+       size 1 0.07
+       halign center_ref
+       valign center_ref
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       text "NO SIGNAL"
+       color 0.5 0.5 0.5 1
+       font "gui/fonts/etelkatextpro18"
+       "exact text" 1
+       "text halign" center
+       "text valign" center
+      }
+     }
+    }
+    PanelWidgetClass cameraStatusPanel {
+     visible 0
+     ignorepointer 1
+     color 0.051 0.051 0.051 0.88
+     position 0.012 0.02
+     size 0.21 0.115
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style rover_sim_colorable
+     {
+      TextWidgetClass textCameraLabel {
+       ignorepointer 1
+       position 0 0
+       size 1 0.35
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       text "CAM 1"
+       color 0.85 0.85 0.85 1
+       font "gui/fonts/etelkatextpro18"
+       "exact text" 1
+       "text halign" center
+       "text valign" center
+      }
+      TextWidgetClass textCameraStatus {
+       ignorepointer 1
+       position 0 0.35
+       size 0.5 0.33
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       text "ONLINE"
+       color 0.2 0.88 0.2 1
+       font "gui/fonts/etelkatextpro14"
+       "exact text" 1
+       "text halign" center
+       "text valign" center
+      }
+      TextWidgetClass textSignalStrength {
+       ignorepointer 1
+       position 0.5 0.35
+       size 0.5 0.33
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       text "EXCELLENT"
+       color 0.65 0.65 0.65 1
+       font "gui/fonts/etelkatextpro14"
+       "exact text" 1
+       "text halign" center
+       "text valign" center
+      }
+      TextWidgetClass textCameraBattery {
+       ignorepointer 1
+       position 0 0.68
+       size 1 0.32
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       text "BATTERY: 100%"
+       color 0.55 0.85 0.55 1
+       font "gui/fonts/etelkatextpro14"
+       "exact text" 1
+       "text halign" center
+       "text valign" center
       }
      }
     }
