@@ -2,7 +2,7 @@ class ILaptopMenu : UIScriptedMenu
 {
 	// --- Core references ---
 	BaseLaptop laptop;
-	Utopia_Desk desk;
+	Citadel_Desk desk;
 	BaseCamera  currentCamera;
 
 	ref array<BaseCamera> arrCamera;
@@ -61,7 +61,7 @@ class ILaptopMenu : UIScriptedMenu
 	void SetLaptop(BaseLaptop _laptop)
 	{
 		laptop = _laptop;
-		desk   = Utopia_Desk.Cast(_laptop);
+		desk   = Citadel_Desk.Cast(_laptop);
 	}
 
 	void InitLoading()

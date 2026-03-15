@@ -5,7 +5,7 @@ modded class ActionConstructor
         super.RegisterActions(actions);
         actions.Insert(ActionOpenCameraMenu);
         actions.Insert(ActionRegisterLaptopForCamera);
-        actions.Insert( ActionTurnOnUtopiaPC );
-		actions.Insert( ActionTurnOffUtopiaPC );
+        actions.Insert( ActionTurnOnCitadelPC );
+		actions.Insert( ActionTurnOffCitadelPC );
     }
 }

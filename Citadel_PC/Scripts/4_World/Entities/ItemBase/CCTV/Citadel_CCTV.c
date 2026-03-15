@@ -1,0 +1,1 @@
+class Citadel_CCTV : BaseCamera{};
